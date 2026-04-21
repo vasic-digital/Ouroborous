@@ -10,12 +10,12 @@ import (
 // MetaPrompt represents metaprompt data.
 type MetaPrompt struct {
 	ReflectionQuestions []string
-	Description string
-	Category string
-	IterationCount int
-	ID string
-	BasePrompt string
-	Name string
+	Description         string
+	Category            string
+	IterationCount      int
+	ID                  string
+	BasePrompt          string
+	Name                string
 }
 
 // Validate checks that the MetaPrompt is valid.
@@ -34,20 +34,37 @@ func (o *MetaPrompt) Validate() error {
 
 // SelfReflection represents selfreflection data.
 type SelfReflection struct {
-	OriginalPrompt string
+	OriginalPrompt        string
 	SuggestedImprovements []string
-	IdentifiedWeaknesses []string
-	Confidence float64
-	SelfAssessment string
+	IdentifiedWeaknesses  []string
+	Confidence            float64
+	SelfAssessment        string
+}
+
+// Validate checks that the SelfReflection is valid.
+func (o *SelfReflection) Validate() error {
+	if o.Confidence < 0 || o.Confidence > 1 {
+		return fmt.Errorf("confidence must be in [0,1]")
+	}
+	return nil
+}
+
+// CycleDetection is returned by DetectCycle.
+type CycleDetection struct {
+	HasCycle       bool
+	Reason         string
+	Depth          int
+	RepeatedPhrase string
+	Confidence     float64
 }
 
 // IterationResult represents iterationresult data.
 type IterationResult struct {
-	Output string
-	SelfScore float64
+	Output       string
+	SelfScore    float64
 	Improvements []string
-	Prompt string
-	Iteration int
+	Prompt       string
+	Iteration    int
 }
 
 // Validate checks that the IterationResult is valid.
@@ -60,12 +77,12 @@ func (o *IterationResult) Validate() error {
 
 // RefinementConfig represents refinementconfig data.
 type RefinementConfig struct {
-	Model string
-	EarlyStop bool
+	Model              string
+	EarlyStop          bool
 	EvaluationCriteria []string
-	TargetScore float64
-	Iterations int
-	InitialPrompt string
+	TargetScore        float64
+	Iterations         int
+	InitialPrompt      string
 }
 
 // Validate checks that the RefinementConfig is valid.
@@ -91,20 +108,19 @@ func (o *RefinementConfig) Defaults() {
 
 // RefinementResult represents refinementresult data.
 type RefinementResult struct {
-	FinalOutput string
-	FinalScore float64
+	FinalOutput        string
+	FinalScore         float64
 	ImprovementHistory []float64
-	Iterations []IterationResult
-	FinalPrompt string
+	Iterations         []IterationResult
+	FinalPrompt        string
 }
 
 // MetaEvaluation represents the result of a meta-evaluation on a prompt/output pair.
 type MetaEvaluation struct {
-	Prompt      string
-	Output      string
-	Criteria    []string
-	Scores      map[string]float64
+	Prompt       string
+	Output       string
+	Criteria     []string
+	Scores       map[string]float64
 	OverallScore float64
-	Analysis    string
+	Analysis     string
 }
-

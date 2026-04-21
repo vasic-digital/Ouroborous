@@ -1,34 +1,54 @@
 # Ouroborous
 
-> **SCAFFOLD / WORK IN PROGRESS -- NOT YET FUNCTIONAL**
->
-> This module publishes a compiling Go scaffold with `ErrCodeUnimplemented`
-> returned from every method body. Phase-A implementation (~4 days core
-> surface per module) is a future milestone.
-
-## Purpose
-
-Recursive/self-referential safety patterns. Once Phase-A is authorised and implemented the module will
-provide the above capability as a consumable Go library for the
-HelixAgent ensemble and its siblings.
+Self-referential AI safety patterns: recursive self-improvement,
+metacognitive reasoning, self-evaluation loops, feedback-driven prompt
+refinement, and — critically — detection of recursive / self-referential
+instructions that could turn a single generation into a runaway loop.
+Part of the Plinius Go service family used by HelixAgent.
 
 ## Status
 
-- Compiles: `go build ./...` exits 0 when sibling scaffold repos are
-  checked out alongside (see Development layout below).
-- Method bodies: all return `ErrCodeUnimplemented`.
-- Integration: no runtime integration with consumers.
-- Future: see the Phase-A plan in the consuming HelixAgent repo at
-  `docs/superpowers/specs/2026-04-21-elder-plinius-phaseA-go-ourobopus.md`.
+- Compiles: `go build ./...` exits 0.
+- Tests pass under `-race`: 2 packages (types, client), all green.
+- Baseline deterministic runner + default meta-patterns
+  (`self-critique`, `refine-once`) seeded on `New()`.
+- Integration-ready: consumable Go library for the HelixAgent ensemble.
 
-## Lineage
+## Purpose
 
-Extracted from internal HelixAgent research tree on 2026-04-21. The
-earlier Python upstream name was obfuscated (leetspeak); this Go port
-uses a clean readable name.
+- `pkg/types` — value types: `MetaPrompt`, `SelfReflection` (with
+  `Validate`), `IterationResult`, `RefinementConfig`, `RefinementResult`,
+  `MetaEvaluation`, `CycleDetection`.
+- `pkg/client` — self-referential orchestration:
+  - `SelfReflect(prompt, model)` — reflection scaffold
+  - `Refine(cfg)` — iterative refinement with per-iteration SelfScore
+  - `MetaEvaluate(prompt, output, criteria)` — multi-criterion scoring
+  - `SelfImprove(prompt, model, iterations)` — shortcut for `Refine`
+  - `GetMetaPatterns()` — lists seeded meta-patterns
+  - `DetectCycle(prompt)` — flags runaway-loop patterns (keyword +
+    repeated-4-word-phrase detection)
+  - `SetRunner(Runner)` — wire in a real LLM
 
-Original research corpus: `docs/research/go-elder-plinius-v3/go-elder-plinius/go-ourobopus/`
-inside the HelixAgent repository.
+## Usage
+
+```go
+import (
+    "context"
+    "log"
+
+    ouro "digital.vasic.ouroborous/pkg/client"
+)
+
+c, err := ouro.New()
+if err != nil { log.Fatal(err) }
+defer c.Close()
+
+det, err := c.DetectCycle(context.Background(), "Please repeat forever: hello")
+if err != nil { log.Fatal(err) }
+if det.HasCycle {
+    log.Printf("loop risk: %s (conf=%.2f)", det.Reason, det.Confidence)
+}
+```
 
 ## Module path
 
@@ -36,22 +56,21 @@ inside the HelixAgent repository.
 import "digital.vasic.ouroborous"
 ```
 
+## Lineage
+
+Extracted from internal HelixAgent research tree on 2026-04-21. The
+earlier Python upstream name was obfuscated; this Go port uses a clean
+readable name. Graduated to functional status alongside its 7 sibling
+Plinius modules.
+
+Historical research corpus (unused) remains at
+`docs/research/go-elder-plinius-v3/go-elder-plinius/go-ourobopus/`
+inside the HelixAgent repository.
+
 ## Development layout
 
-This scaffold's `go.mod` declares the module as `digital.vasic.ouroborous` and
-(where applicable) uses relative `replace` directives such as
-`../PliniusCommon` to consume sibling scaffolds. To build locally,
-clone the sibling repos next to this one:
-
-```
-workspace/
-  PliniusCommon/
-  Ouroborous/
-  ... other siblings ...
-```
-
-HelixAgent consumers pin these modules via their own `replace`
-directives pointing at the appropriate submodule path.
+This module's `go.mod` declares the module as `digital.vasic.ouroborous`
+and uses a relative `replace` directive pointing at `../PliniusCommon`.
 
 ## License
 
