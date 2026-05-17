@@ -30,6 +30,9 @@ func BenchmarkRefine(b *testing.B) {
 		b.Fatal(err)
 	}
 	defer c.Close()
+	// Per round-26 §11.4 audit: a real / stub Runner MUST be injected before
+	// Refine — the default returns ErrBaselineRunnerNotConfigured.
+	c.SetRunner(echoTestRunner)
 	ctx := context.Background()
 	cfg := types.RefinementConfig{Model: "m", InitialPrompt: "hi", Iterations: 3}
 	b.ResetTimer()

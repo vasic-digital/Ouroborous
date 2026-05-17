@@ -307,13 +307,32 @@ func (c *Client) seedDefaults() {
 	}
 }
 
+// baselineRunner previously echoed the prompt as "RESPONSE: <prompt[:200]>"
+// — a deterministic stand-in installed as the default Runner on New() and
+// NewFromConfig(). Per round-26 §11.4 audit (2026-05-17), any caller forgetting
+// to call SetRunner before invoking SelfReflect / Refine / MetaEvaluate /
+// SelfImprove received fabricated "RESPONSE: ..." outputs scored by the
+// internal heuristics, producing MEANINGLESS reflection / refinement /
+// meta-evaluation data with no error surfaced — CRITICAL PASS-bluff at the
+// library-default layer.
+//
+// Fix: baselineRunner now returns ErrBaselineRunnerNotConfigured. Callers
+// MUST inject a real LLM-dispatching Runner via SetRunner before invoking
+// any reflection / refinement / meta-evaluation surface. Tests that need a
+// deterministic stand-in MUST provide their own echo runner via SetRunner
+// — the default is no longer a silent echo.
 func baselineRunner(_ context.Context, prompt string) (string, error) {
-	limit := len(prompt)
-	if limit > 200 {
-		limit = 200
-	}
-	return "RESPONSE: " + prompt[:limit], nil
+	_ = prompt
+	return "", ErrBaselineRunnerNotConfigured
 }
+
+// ErrBaselineRunnerNotConfigured is returned when Ouroborous's SelfReflect /
+// Refine / MetaEvaluate / SelfImprove is invoked without a real LLM Runner
+// injected via SetRunner. The previous baselineRunner default echoed the
+// prompt as "RESPONSE: <prompt[:200]>" and returned success, producing
+// fabricated reflection / refinement / evaluation data — §11.4 PASS-bluff at
+// the library-default layer.
+var ErrBaselineRunnerNotConfigured = fmt.Errorf("ouroborous: baseline Runner has not been replaced — call client.SetRunner(...) with a real LLM-dispatching runner before invoking SelfReflect / Refine / MetaEvaluate / SelfImprove (the previous echo-back default produced meaningless reflection data; §11.4 PASS-bluff removed)")
 
 func scoreOutput(output string) float64 {
 	L := float64(len(output))
