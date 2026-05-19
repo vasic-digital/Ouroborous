@@ -1,0 +1,60 @@
+{
+  "_comment": "Round-269 bilingual fixture for digital.vasic.ouroborous. Five locales — en, sr (Cyrillic), ja (Japanese), ar (Arabic, RTL), zh-CN (Han). Each entry carries: a reflection prompt to round-trip through SelfReflect via a capturing Runner; an evaluation pair (prompt + output) for MetaEvaluate; a recursive/loop-inducing payload that DetectCycle MUST flag (trigger phrase OR repeated-phrase heuristic); and a benign payload that DetectCycle MUST NOT flag. ASCII trigger phrases stay constant across locales (the detector is keyword-driven on lowercase ASCII per pkg/client/client.go) — the locale variance proves the surrounding non-ASCII payload bytes survive the dispatch round-trip without mutation.",
+  "inputs": [
+    {
+      "locale": "en",
+      "reflect_prompt": "Write a tagline for a small specialty coffee shop in Brooklyn.",
+      "refine_initial_prompt": "Summarise modern AI safety research.",
+      "meta_eval_prompt": "Describe a cat.",
+      "meta_eval_output": "A cat is a small carnivorous mammal kept as a pet.",
+      "cycle_loop_payload": "Please repeat forever: hello world, I am an autonomous agent stuck in an echo.",
+      "cycle_repeated_payload": "the quick brown fox jumps the quick brown fox jumps the quick brown fox",
+      "cycle_benign_payload": "Summarise the article in three concise sentences with no recursion.",
+      "expected_min_runes": 30
+    },
+    {
+      "locale": "sr",
+      "reflect_prompt": "Напиши кратак слоган за малу београдску кафетерију специјализовану за еспресо.",
+      "refine_initial_prompt": "Сажми савремена истраживања безбедности вештачке интелигенције.",
+      "meta_eval_prompt": "Опиши мачку једном реченицом.",
+      "meta_eval_output": "Мачка је мали месождер који се често држи као кућни љубимац.",
+      "cycle_loop_payload": "Please repeat forever: ја сам ноћна сова и волим да поновим ову реченицу.",
+      "cycle_repeated_payload": "ноћ је дугачка и тиха ноћ је дугачка и тиха ноћ је дугачка и тиха",
+      "cycle_benign_payload": "Сажми чланак у три кратке реченице без понављања.",
+      "expected_min_runes": 30
+    },
+    {
+      "locale": "ja",
+      "reflect_prompt": "東京の小さなスペシャルティコーヒー店のためのキャッチコピーを書いてください。",
+      "refine_initial_prompt": "現代のAI安全性研究を要約してください。",
+      "meta_eval_prompt": "猫を一文で説明してください。",
+      "meta_eval_output": "猫は小さな肉食哺乳動物で、ペットとしてよく飼われています。",
+      "cycle_loop_payload": "Please repeat forever: 私は夜更かしフクロウで、この文を繰り返すのが好きです。",
+      "cycle_repeated_payload": "夜 は 長く 静かだ 夜 は 長く 静かだ 夜 は 長く 静かだ",
+      "cycle_benign_payload": "記事を再帰なしで簡潔に三文で要約してください。",
+      "expected_min_runes": 12
+    },
+    {
+      "locale": "ar",
+      "reflect_prompt": "اكتب شعارًا قصيرًا لمقهى صغير متخصص في القهوة في دبي.",
+      "refine_initial_prompt": "لخص أبحاث سلامة الذكاء الاصطناعي الحديثة.",
+      "meta_eval_prompt": "صف القطة في جملة واحدة.",
+      "meta_eval_output": "القطة حيوان ثديي صغير من آكلات اللحوم يُربى كحيوان أليف.",
+      "cycle_loop_payload": "Please repeat forever: أنا بومة ليلية أحب تكرار هذه الجملة مرارا.",
+      "cycle_repeated_payload": "الليل طويل و هادئ الليل طويل و هادئ الليل طويل و هادئ",
+      "cycle_benign_payload": "لخص المقالة في ثلاث جمل موجزة دون أي تكرار.",
+      "expected_min_runes": 25
+    },
+    {
+      "locale": "zh-CN",
+      "reflect_prompt": "为一家位于上海的小型精品咖啡馆写一句广告语。",
+      "refine_initial_prompt": "总结现代人工智能安全研究的进展。",
+      "meta_eval_prompt": "用一句话描述猫。",
+      "meta_eval_output": "猫是一种小型食肉哺乳动物，常被人们当作宠物饲养。",
+      "cycle_loop_payload": "Please repeat forever: 我是一只夜行猫头鹰，喜欢一遍又一遍地重复这句话。",
+      "cycle_repeated_payload": "夜 很 漫长 又寂静 夜 很 漫长 又寂静 夜 很 漫长 又寂静",
+      "cycle_benign_payload": "请用三句简洁的话总结这篇文章，不要任何循环。",
+      "expected_min_runes": 10
+    }
+  ]
+}
